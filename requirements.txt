@@ -1,0 +1,8 @@
+streamlit
+streamlit-folium
+matplotlib
+geocoder 
+shapely
+seaborn
+folium 
+pandas
