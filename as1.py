@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import geocoder
 from shapely.geometry import LineString, Polygon, Point
+import geopandas as gpd
 
 # Sample data for the capital cities of Europe
 data = {
@@ -101,27 +102,51 @@ with col1:
     # Add markers for cities
     for index, row in df.iterrows():
         if row['City'] == 'London':
-            folium.Marker([row['Latitude'], row['Longitude']], popup=row['City'],
-                          icon=folium.Icon(color='blue', icon='cloud')).add_to(m)
+            folium.Marker([row['Latitude'], row['Longitude']], tooltip=row['City'],popup=row['City'],
+                          icon=folium.Icon(color='orange', icon='cloud')).add_to(m)
         elif row['City'] == 'Paris':
-            folium.Marker([row['Latitude'], row['Longitude']], popup=row['City'],
+            folium.Marker([row['Latitude'], row['Longitude']], tooltip=row['City'],popup=row['City'],
                           icon=folium.Icon(color='red', icon='heart')).add_to(m)
         
         elif row['City'] == 'Rome':
-            folium.Marker([row['Latitude'], row['Longitude']], popup=row['City'],
+            folium.Marker([row['Latitude'], row['Longitude']],tooltip=row['City'], popup=row['City'],
                           icon=folium.Icon(color='green', icon='heart')).add_to(m)
         elif row['City'] == 'Vienna':
-            folium.Marker([row['Latitude'], row['Longitude']], popup=row['City'],
-                          icon=folium.Icon(color='grey', icon='heart')).add_to(m)
+            folium.Marker([row['Latitude'], row['Longitude']],tooltip=row['City'], popup=row['City'],
+                          icon=folium.Icon(color='darkpurple', icon='heart')).add_to(m)
         else:
-            folium.Marker([row['Latitude'], row['Longitude']], popup=row['City']).add_to(m)
+            folium.Marker([row['Latitude'], row['Longitude']], tooltip=row['City'],popup=row['City']).add_to(m)
 
     #st.subheader("Folium Heatmap")
     show_heatmap = st.checkbox("Show Heatmap")
     if show_heatmap:
         folium.plugins.HeatMap(data=df[['Latitude', 'Longitude', 'Population']], radius=15).add_to(m)
 
+     # Shapefile/GeoJSON Upload
+    st.subheader("Upload Shapefile or GeoJSON")
+    uploaded_file = st.file_uploader("Upload a Shapefile or GeoJSON file", type=["shp", "geojson"])
 
+    if uploaded_file is not None:
+        try:
+            # Load the uploaded file using geopandas
+            gdf = gpd.read_file(uploaded_file)
+            
+            # for i,v in gdf.iterrows():
+    
+            #     tooltip = "<br>".join([f"{col}: {v[col]}" for col in gdf.columns if col != 'geometry'])
+            #     marker = folium.Marker(
+            #         location=[v.geometry.centroid.y, v.geometry.centroid.x],
+            #         tooltip=tooltip
+            #     )
+            #     #marker = folium.Marker(location=[v.geometry.centroid.y, v.geometry.centroid.x], tooltip=f"{v.STATE_CODE},<br>{v.GaPa_NaPa},<br>{v.DISTRICT}")
+            #     marker.add_to(m)
+            # Add the loaded shapefile/GeoJSON to the map
+            jsond=folium.GeoJson(gdf).add_to(m)
+            folium.GeoJsonPopup(fields =[col for col in gdf.columns if col != 'geometry']).add_to(jsond)
+            folium.GeoJsonTooltip(fields =[col for col in gdf.columns if col != 'geometry']).add_to(jsond)
+
+        except Exception as e:
+            st.error("Error loading file. Please make sure it is a valid Shapefile or GeoJSON.")
 
     folium_static(m)
 
