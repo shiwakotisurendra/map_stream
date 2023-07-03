@@ -1,9 +1,10 @@
 streamlit
 streamlit-folium
+pandas
 geopandas
 matplotlib
 geocoder 
 shapely
 seaborn
 folium 
-pandas
+
