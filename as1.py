@@ -217,14 +217,18 @@ with col1:
     #         st.error(
     #             "Error loading file. Please make sure it is a valid Shapefile or GeoJSON."
     #         )
+    @st.cache_data
+    def get_temp_dir():
+        return tempfile.TemporaryDirectory().name
+    tempdir = get_temp_dir()
 
     def handle_upload(uploaded_file):
-        if uploaded_file.name.endswith(".geojson") or uploaded_file.name.endswith(
-            ".json"
-        ):
+    
+        if type(uploaded_file)== list and (any('.geojson' in file.name for file in uploaded_file)):# or any('.json' in file.name for file in uploaded_file)):
             # data = uploaded_file.read()
-            gdf = gpd.read_file(uploaded_file)
-
+            for uploaded_file in uploaded_file:
+                gdf = gpd.read_file(uploaded_file)
+            
             # geojson_layer = folium.GeoJson(data)
             # geojson_layer.add_to(m)
             # Add the loaded shapefile/GeoJSON to the map
@@ -244,51 +248,67 @@ with col1:
                 fields=[col for col in gdf.columns if col != "geometry"],
                 style=(
                     """background-color: grey; color: white; font-family:"
-         courier new; font-size: 24px; padding: 10px;"""
+        courier new; font-size: 24px; padding: 10px;"""
                 ),
             ).add_to(jsond)
-        elif uploaded_file.name.endswith(".shp"):
-            with tempfile.TemporaryDirectory() as temp_dir:
-                # Save the uploaded shapefile to a temporary directory
-                # for ext in [".shp", ".shx", ".dbf", ".prj"]:
-                temp_file_path = os.path.join(
-                    temp_dir, uploaded_file.name
-                )
-                with open(temp_file_path, "wb") as temp_file:
-                    temp_file.write(uploaded_file.getvalue())
-                    
-                os.environ["SHAPE_RESTORE_SHX"] = "YES"
-                gdf = gpd.read_file(temp_file_path)
 
-                # Copy the shapefile components to a different location
-                # dest_dir = "./temp_shapefile"
-                # os.makedirs(dest_dir, exist_ok=True)
-                # for ext in [".shp", ".shx", ".dbf", ".prj", ".csv"]:
-                #     temp_file_path = os.path.join(
-                #         temp_dir, uploaded_file.name.replace(".shp", ext)
-                #     )
-                #     dest_file_path = os.path.join(
-                #         dest_dir, uploaded_file.name.replace(".shp", ext)
-                #     )
-                #     shutil.copy(temp_file_path, dest_file_path)
+        elif type(uploaded_file) != list and uploaded_file.name.endswith('.geojson'):
+            gdf = gpd.read_file(uploaded_file)
 
-                # Set SHAPE_RESTORE_SHX config option to YES
+            def highlight_function(feature):
+                return {
+                    "fillColor": "#ff0000",
+                    "color": "#000000",
+                    "weight": 1,
+                    "fillOpacity": 0.5,
+                }
+
+            jsond = folium.GeoJson(gdf, highlight_function=highlight_function).add_to(m)
+            folium.GeoJsonPopup(
+                fields=[col for col in gdf.columns if col != "geometry"]
+            ).add_to(jsond)
+            folium.GeoJsonTooltip(
+                fields=[col for col in gdf.columns if col != "geometry"],
+                style=(
+                    """background-color: grey; color: white; font-family:"
+        courier new; font-size: 24px; padding: 10px;"""
+                ),
+            ).add_to(jsond)
+
+        elif any('.shp' in file.name for file in uploaded_file):
             
+            with tempfile.TemporaryDirectory() as temp_dir:
 
-              # gpd.read_file(dest_dir)
+            # Save the uploaded shapefile to a temporary directory
+                for uploaded_file in uploaded_file:
+                    temp_file_path = os.path.join(
+                        temp_dir, uploaded_file.name
+                    )
+                    print(temp_file_path)
+                    if uploaded_file.name.endswith(".shp"):
+                        shp_path = temp_file_path
+                    with open(temp_file_path, "wb") as temp_file:
+                        temp_file.write(uploaded_file.getbuffer())
 
-            # print(temp_path)
+                gdf = gpd.read_file(shp_path)       
+            os.environ["SHAPE_RESTORE_SHX"] = "YES"
+            
+            print(shp_path)
+   
+    
+#############################################################################
+            # with tempfile.TemporaryDirectory() as temp_dir:
+            #     # Save the uploaded shapefile to a temporary directory
+            #     # for ext in [".shp", ".shx", ".dbf", ".prj"]:
+            #     temp_file_path = os.path.join(
+            #         temp_dir, uploaded_file.name
+            #     )
+            #     with open(temp_file_path, "wb") as temp_file:
+            #         temp_file.write(uploaded_file.getvalue())
+                    
+            #     os.environ["SHAPE_RESTORE_SHX"] = "YES"
+#############################################################################
 
-            # Read the shapefile using geopandas
-
-            # gdf = gpd.read_file(
-            #     shp_path,
-            #     shx=shx_path,
-            #     dbf=dbf_path,
-            #     prj=prj_path,
-            #     usecols="all",
-            #     encoding="utf-8",
-            # )
             print(gdf.head())
             # Assign a CRS to the GeoDataFrame if it is not already defined
             if gdf.crs is None:
@@ -316,14 +336,14 @@ with col1:
         courier new; font-size: 24px; padding: 10px;"""
                 ),
             ).add_to(jsond)
-            # geojson_layer.add_to(m)
+        # geojson_layer.add_to(m)
 
     # Add the file upload button to the Streamlit app
     st.sidebar.header("Upload Shapefile or GeoJSON")
     uploaded_file = st.sidebar.file_uploader(
         "Upload",
-        type=["geojson", "shp", "json"],
-        accept_multiple_files=False,
+        type=["geojson","shx","prj","dbf","shp", "json"],
+        accept_multiple_files=True,
         key="upload",
     )
     if uploaded_file is not None:
