@@ -1,6 +1,4 @@
-import json
 import os
-import shutil
 import tempfile
 import streamlit as st
 import folium
@@ -11,10 +9,6 @@ import seaborn as sns
 import geocoder
 from shapely.geometry import LineString, Polygon, Point
 import geopandas as gpd
-from streamlit.components.v1 import html
-import ipywidgets as widgets
-from ipywidgets import FileUpload
-
 
 # Sample data for the capital cities of Europe
 data = {
@@ -266,7 +260,7 @@ with col1:
                 os.environ["SHAPE_RESTORE_SHX"] = "YES"
                 gdf = gpd.read_file(temp_file_path)
 
-                        # Copy the shapefile components to a different location
+                # Copy the shapefile components to a different location
                 # dest_dir = "./temp_shapefile"
                 # os.makedirs(dest_dir, exist_ok=True)
                 # for ext in [".shp", ".shx", ".dbf", ".prj", ".csv"]:
