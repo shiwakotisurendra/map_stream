@@ -45,7 +45,7 @@ for city in data["City"]:
 data["Latitude"] = latitudes
 data["Longitude"] = longitudes
 
-df = pd.DataFrame(data)
+df = pd.DataFrame(data).dropna()
 
 # Streamlit configuration
 st.set_page_config(page_title="Dashboard with Folium Map and Plots", layout="wide")
