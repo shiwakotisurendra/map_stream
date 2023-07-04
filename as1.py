@@ -118,9 +118,14 @@ with col1:
     folium.LatLngPopup().add_to(m)
     folium.plugins.MousePosition().add_to(m)
     folium.plugins.Fullscreen().add_to(m)
+    folium.plugins.Geocoder().add_to(m)
+    folium.plugins.LocateControl(auto_start=False).add_to(m)
+    folium.plugins.MiniMap().add_to(m)
+    folium.plugins.ScrollZoomToggler().add_to(m)
+    #folium.plugins.PolyLineOffset(locations=[[df["Latitude"].mean(), df["Longitude"].mean()]]).add_to(m)
 
     # Enable drawing control
-    draw_plugin = folium.plugins.Draw(export=False)
+    draw_plugin = folium.plugins.Draw(export=True,edit_options={"edit": True})
     draw_plugin.add_to(m)
     basemap_options[basemap_selection].add_to(m)
 
@@ -130,7 +135,7 @@ with col1:
     # Add markers for cities
     for index, row in df.iterrows():
         if row["City"] == "London":
-            folium.Marker(
+            folium.plugins.BoatMarker(
                 [row["Latitude"], row["Longitude"]],
                 tooltip=row["City"],
                 popup=row["City"],
@@ -351,7 +356,12 @@ with col1:
         handle_upload(uploaded_file)
 
     # st_folium(m, width=900, height=600)
-    folium_static(m)
+    output= folium_static(m)
+
+
+
+
+
 
     # #Save the drawn object
     # drawn_json = draw_plugin.last_draw
