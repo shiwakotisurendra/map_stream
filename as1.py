@@ -118,6 +118,7 @@ with col1:
     folium.LatLngPopup().add_to(m)
     folium.plugins.MousePosition().add_to(m)
     folium.plugins.Fullscreen().add_to(m)
+
     # Enable drawing control
     draw_plugin = folium.plugins.Draw(export=False)
     draw_plugin.add_to(m)
@@ -224,7 +225,7 @@ with col1:
 
     def handle_upload(uploaded_file):
     
-        if type(uploaded_file)== list and (any('.geojson' in file.name for file in uploaded_file)):# or any('.json' in file.name for file in uploaded_file)):
+        if type(uploaded_file)== list and (any('.geojson' in file.name for file in uploaded_file) or any('.json' in file.name for file in uploaded_file)):# or any('.json' in file.name for file in uploaded_file)):
             # data = uploaded_file.read()
             for uploaded_file in uploaded_file:
                 gdf = gpd.read_file(uploaded_file)
@@ -252,7 +253,7 @@ with col1:
                 ),
             ).add_to(jsond)
 
-        elif type(uploaded_file) != list and uploaded_file.name.endswith('.geojson'):
+        elif type(uploaded_file) != list and (uploaded_file.name.endswith('.geojson') or uploaded_file.name.endswith('.json')):
             gdf = gpd.read_file(uploaded_file)
 
             def highlight_function(feature):
