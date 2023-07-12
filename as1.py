@@ -100,6 +100,8 @@ with col1:
 
     basemap_options = {
         "OpenStreetMap": folium.TileLayer("OpenStreetMap"),
+        "OSM TopoMap": folium.TileLayer("https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",name='OpenStreetMap',
+                     attr='Map data © OpenStreetMap contributors'),
         "CartoDB Dark_Matter": folium.TileLayer("CartoDB dark_matter"),
         "Stamen Terrain": folium.TileLayer("Stamen Terrain"),
         "ESRI Imagery": folium.TileLayer(
@@ -115,9 +117,6 @@ with col1:
     m = folium.Map(
         location=[df["Latitude"].mean(), df["Longitude"].mean()], zoom_start=4
     )
-    folium.TileLayer('http://tiles.openseamap.org/seamark/{z}/{x}/{y}.png',
-                     name='OpenSeaMap',
-                     attr='Map data © OpenSeaMap contributors').add_to(m)
     folium.LatLngPopup().add_to(m)
     folium.plugins.MousePosition().add_to(m)
     folium.plugins.Fullscreen().add_to(m)
@@ -179,7 +178,12 @@ with col1:
         folium.plugins.HeatMap(
             data=df[["Latitude", "Longitude", "Population"]], radius=15
         ).add_to(m)
-
+    # st.subheader("OpenSeaMap")
+    show_openseamap = st.checkbox("Show Openseamap")
+    if show_openseamap:
+        folium.TileLayer('http://tiles.openseamap.org/seamark/{z}/{x}/{y}.png',
+                     name='OpenSeaMap',
+                     attr='Map data © OpenSeaMap contributors').add_to(m)
     # Shapefile/GeoJSON Upload
     """"""
     # st.subheader("Upload Shapefile or GeoJSON")
