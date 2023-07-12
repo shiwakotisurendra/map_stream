@@ -7,52 +7,87 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import geocoder
-from shapely.geometry import LineString, Polygon, Point
+from shapely.geometry import LineString, Polygon, Point,shape,box
 import geopandas as gpd
-
-# Sample data for the capital cities of Europe
-data = {
-    "City": [
-        "London",
-        "Paris",
-        "Madrid",
-        "Berlin",
-        "Rome",
-        "Athens",
-        "Vienna",
-        "Amsterdam",
-    ],
-    "Population": [
-        8961989,
-        2140526,
-        3266126,
-        3769495,
-        2872800,
-        6640466,
-        1911191,
-        873555,
-    ],
-}
-
-# Retrieve latitude and longitude coordinates for each city
-latitudes = []
-longitudes = []
-for city in data["City"]:
-    g = geocoder.osm(city)
-    latitudes.append(g.lat)
-    longitudes.append(g.lng)
-
-data["Latitude"] = latitudes
-data["Longitude"] = longitudes
-
-df = pd.DataFrame(data).dropna()
+import requests
 
 # Streamlit configuration
 st.set_page_config(page_title="Dashboard with Folium Map and Plots", layout="wide")
 
+@st.cache_data
+def europe_capital():
+    # Sample data for the capital cities of Europe
+    data = {
+        "City": [
+            "London",
+            "Paris",
+            "Madrid",
+            "Berlin",
+            "Rome",
+            "Athens",
+            "Vienna",
+            "Amsterdam",
+        ],
+        "Population": [
+            8961989,
+            2140526,
+            3266126,
+            3769495,
+            2872800,
+            6640466,
+            1911191,
+            873555,
+        ],
+    }
+
+    # Retrieve latitude and longitude coordinates for each city
+    latitudes = []
+    longitudes = []
+    for city in data["City"]:
+        g = geocoder.osm(city)
+        latitudes.append(g.lat)
+        longitudes.append(g.lng)
+
+    data["Latitude"] = latitudes
+    data["Longitude"] = longitudes
+
+    df = pd.DataFrame(data).dropna()
+    return df
+
+def get_admin_boundaries(place):
+    url = 'https://nominatim.openstreetmap.org/search'
+    params = {
+        'q': place,
+        'format': 'json',
+        'polygon_geojson': 1,
+        'limit': 1
+    }
+
+    response = requests.get(url, params=params)
+    data = response.json()
+
+    if len(data) > 0:
+        return data[0]['geojson']
+    else:
+        return None
+    
+
+
+
+df = europe_capital()
+
+def get_gdf_from_name(name):
+    get_gdf = gpd.GeoDataFrame(geometry=[shape(get_admin_boundaries(name))],crs="epsg:4326")
+
+    return get_gdf
+
 # Title and subtitle
 st.title("Full-Page Dashboard with Folium Map and Plots")
 st.subheader("Interactive map and plot options")
+
+def display_map(df):
+    m = folium.Map(location=[df["Latitude"].mean(), df["Longitude"].mean()], zoom_start=4)
+    return m
 
 # Wide layout with two columns
 col1, col2 = st.columns([2, 0.8])
@@ -104,6 +139,8 @@ with col1:
                      attr='Map data © OpenStreetMap contributors'),
         "CartoDB Dark_Matter": folium.TileLayer("CartoDB dark_matter"),
         "Stamen Terrain": folium.TileLayer("Stamen Terrain"),
+        "ESRI NatGeoWorldMap": folium.TileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}",
+                                                attr="ESRI NatGeoMap",name="ESRI NatGeoMap"),
         "ESRI Imagery": folium.TileLayer(
             "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
             attr="ESRI Imagery",
@@ -114,16 +151,15 @@ with col1:
     basemap_selection = st.selectbox("Select Basemap", list(basemap_options.keys()))
 
     # Create the map with selected basemap
-    m = folium.Map(
-        location=[df["Latitude"].mean(), df["Longitude"].mean()], zoom_start=4
-    )
+    m = display_map(df)
     folium.LatLngPopup().add_to(m)
     folium.plugins.MousePosition().add_to(m)
     folium.plugins.Fullscreen().add_to(m)
     folium.plugins.Geocoder().add_to(m)
     folium.plugins.LocateControl(auto_start=False).add_to(m)
+    folium.plugins.MeasureControl(position='topright', primary_length_unit='meters', secondary_length_unit='miles', primary_area_unit='sqmeters', secondary_area_unit='acres').add_to(m)
     folium.plugins.MiniMap().add_to(m)
-    folium.plugins.ScrollZoomToggler().add_to(m)
+    #folium.plugins.ScrollZoomToggler().add_to(m)
     #folium.plugins.PolyLineOffset(locations=[[df["Latitude"].mean(), df["Longitude"].mean()]]).add_to(m)
 
     # Enable drawing control
@@ -133,6 +169,9 @@ with col1:
 
     # Add the draw control to the map
     m.add_child(draw_plugin)
+    city_name = st.text_input('Enter the place name')
+    if city_name:
+        folium.GeoJson(get_gdf_from_name(city_name)).add_to(m)
 
     # Add markers for cities
     for index, row in df.iterrows():
