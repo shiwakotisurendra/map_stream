@@ -7,3 +7,4 @@ geocoder
 shapely
 seaborn
 folium 
+requests
