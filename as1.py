@@ -115,6 +115,9 @@ with col1:
     m = folium.Map(
         location=[df["Latitude"].mean(), df["Longitude"].mean()], zoom_start=4
     )
+    folium.TileLayer('http://tiles.openseamap.org/seamark/{z}/{x}/{y}.png',
+                     name='OpenSeaMap',
+                     attr='Map data © OpenSeaMap contributors').add_to(m)
     folium.LatLngPopup().add_to(m)
     folium.plugins.MousePosition().add_to(m)
     folium.plugins.Fullscreen().add_to(m)
