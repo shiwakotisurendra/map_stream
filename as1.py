@@ -10,6 +10,7 @@ import geocoder
 from shapely.geometry import LineString, Polygon, Point,shape,box
 import geopandas as gpd
 import requests
+from branca.element import Figure
 
 # Streamlit configuration
 st.set_page_config(page_title="Dashboard with Folium Map and Plots", layout="wide")
@@ -152,6 +153,7 @@ with col1:
 
     # Create the map with selected basemap
     m = display_map(df)
+    Figure(width="100%",height="70%").add_child(m)
     folium.LatLngPopup().add_to(m)
     folium.plugins.MousePosition().add_to(m)
     folium.plugins.Fullscreen().add_to(m)
