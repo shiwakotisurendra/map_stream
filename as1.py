@@ -157,37 +157,21 @@ with col1:
           "http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}",
             attr="googlestreetmap",
             name= "googlestreetmap",
-          {
-            "maxZoom": 20,
-            subdomains: ["mt0", "mt1", "mt2", "mt3"],
-          }
         ),
         "googleSat": folium.TileLayer(
           "http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}",
             attr="googlesatellitemap",
             name= ""googlesatellitemap",
-          {
-            "maxZoom": 20,
-            subdomains: ["mt0", "mt1", "mt2", "mt3"],
-          }
         ),
         "googleHybrid": folium.TileLayer(
           "http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}",
             attr="googlehybridmap",
             name= ""googlehybridmap",
-          {
-            "maxZoom": 20,
-            subdomains: ["mt0", "mt1", "mt2", "mt3"],
-          }
         ),
         "googleTerrain": folium.TileLayerr(
           "http://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}",
             attr="googleterrainemap",
             name= ""googleterrainmap",
-          {
-            "maxZoom": 20,
-            "subdomains": ["mt0", "mt1", "mt2", "mt3"],
-          }
         ),
     }
 
