@@ -161,7 +161,7 @@ with col1:
         "googleSat": folium.TileLayer(
           "http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}",
             attr="googlesatellitemap",
-            name= ""googlesatellitemap",
+            name= "googlesatellitemap",
         ),
         "googleHybrid": folium.TileLayer(
           "http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}",
