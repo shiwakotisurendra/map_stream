@@ -153,26 +153,6 @@ with col1:
               '<a href="https://github.com/cyclosm/cyclosm-cartocss-style/releases" title="CyclOSM - Open Bicycle render">CyclOSM</a> | Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
             name="Cyle OSM",
         ),
-        "googleStreets": folium.TileLayer(
-          "http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}",
-            attr="googlestreetmap",
-            name= "googlestreetmap",
-        ),
-        "googleSat": folium.TileLayer(
-          "http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}",
-            attr="googlesatellitemap",
-            name= "googlesatellitemap",
-        ),
-        "googleHybrid": folium.TileLayer(
-          "http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}",
-            attr="googlehybridmap",
-            name= "googlehybridmap",
-        ),
-        "googleTerrain": folium.TileLayerr(
-          "http://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}",
-            attr="googleterrainemap",
-            name= "googleterrainmap",
-        ),
     }
 
     basemap_selection = st.selectbox("Select Basemap", list(basemap_options.keys()))
