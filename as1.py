@@ -166,12 +166,12 @@ with col1:
         "googleHybrid": folium.TileLayer(
           "http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}",
             attr="googlehybridmap",
-            name= ""googlehybridmap",
+            name= "googlehybridmap",
         ),
         "googleTerrain": folium.TileLayerr(
           "http://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}",
             attr="googleterrainemap",
-            name= ""googleterrainmap",
+            name= "googleterrainmap",
         ),
     }
 
