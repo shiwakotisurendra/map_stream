@@ -147,6 +147,42 @@ with col1:
             attr="ESRI Imagery",
             name="ESRI Imagery",
         ),
+         CyclOSM: L.tileLayer(
+          "https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png",
+          {
+            maxZoom: 20,
+            attribution:
+              '<a href="https://github.com/cyclosm/cyclosm-cartocss-style/releases" title="CyclOSM - Open Bicycle render">CyclOSM</a> | Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+          }
+        ),
+        googleStreets: L.tileLayer(
+          "http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}",
+          {
+            maxZoom: 20,
+            subdomains: ["mt0", "mt1", "mt2", "mt3"],
+          }
+        ),
+        googleSat: L.tileLayer(
+          "http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}",
+          {
+            maxZoom: 20,
+            subdomains: ["mt0", "mt1", "mt2", "mt3"],
+          }
+        ),
+        googleHybrid: L.tileLayer(
+          "http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}",
+          {
+            maxZoom: 20,
+            subdomains: ["mt0", "mt1", "mt2", "mt3"],
+          }
+        ),
+        googleTerrain: L.tileLayer(
+          "http://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}",
+          {
+            maxZoom: 20,
+            subdomains: ["mt0", "mt1", "mt2", "mt3"],
+          }
+        ),
     }
 
     basemap_selection = st.selectbox("Select Basemap", list(basemap_options.keys()))
