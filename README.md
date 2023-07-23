@@ -4,7 +4,7 @@
 
 ### Streamlit dashboard with Folium based web-map
 * multiple plotting option with matplotlib
-* with multiple base maps(osm,osmTOPO,openseamap,ESRIWorldImagery,Googlesatellite,Googlehybrid,Googlestreet)
+* with multiple base maps(osm,osmTOPO,openseamap,ESRIWorldImagery)
 * upload GeoJSON,shapefile support (tooltip and popup)
 * mouseover latlon feature
 * mouseclick latlon popup feature
