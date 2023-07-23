@@ -156,7 +156,7 @@ with col1:
         "googleStreets": folium.TileLayer(
           "http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}",
             attr="googlestreetmap",
-            name= ""googlestreetmap",
+            name= "googlestreetmap",
           {
             "maxZoom": 20,
             subdomains: ["mt0", "mt1", "mt2", "mt3"],
