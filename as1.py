@@ -148,15 +148,15 @@ with col1:
             name="ESRI Imagery",
         ),
          "CyclOSM": folium.TileLayer(
-          "https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png",
-          {
-            "maxZoom": 20,
-            attribution:
+          "https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png", 
+            attr=
               '<a href="https://github.com/cyclosm/cyclosm-cartocss-style/releases" title="CyclOSM - Open Bicycle render">CyclOSM</a> | Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-          }
+            name="Cyle OSM",
         ),
         "googleStreets": folium.TileLayer(
           "http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}",
+            attr="googlestreetmap",
+            name= ""googlestreetmap",
           {
             "maxZoom": 20,
             subdomains: ["mt0", "mt1", "mt2", "mt3"],
@@ -164,6 +164,8 @@ with col1:
         ),
         "googleSat": folium.TileLayer(
           "http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}",
+            attr="googlesatellitemap",
+            name= ""googlesatellitemap",
           {
             "maxZoom": 20,
             subdomains: ["mt0", "mt1", "mt2", "mt3"],
@@ -171,6 +173,8 @@ with col1:
         ),
         "googleHybrid": folium.TileLayer(
           "http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}",
+            attr="googlehybridmap",
+            name= ""googlehybridmap",
           {
             "maxZoom": 20,
             subdomains: ["mt0", "mt1", "mt2", "mt3"],
@@ -178,6 +182,8 @@ with col1:
         ),
         "googleTerrain": folium.TileLayerr(
           "http://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}",
+            attr="googleterrainemap",
+            name= ""googleterrainmap",
           {
             "maxZoom": 20,
             "subdomains": ["mt0", "mt1", "mt2", "mt3"],
