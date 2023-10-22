@@ -1,4 +1,4 @@
-# map_stream
+# Dashboard for interactive maps and visualization of geospatial data/plots. 
 
 ### Check [website](https://mapstream-geosuren.streamlit.app/) for viewing full dashboard.
 
