@@ -139,7 +139,6 @@ with col1:
         "OSM TopoMap": folium.TileLayer("https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",name='OpenStreetMap',
                      attr='Map data © OpenStreetMap contributors'),
         "CartoDB Dark_Matter": folium.TileLayer("CartoDB dark_matter"),
-        "Stamen Terrain": folium.TileLayer("Stamen Terrain"),
         "ESRI NatGeoWorldMap": folium.TileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}",
                                                 attr="ESRI NatGeoMap",name="ESRI NatGeoMap"),
         "ESRI Imagery": folium.TileLayer(
