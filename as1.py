@@ -217,34 +217,6 @@ with col1:
             name="Cyle OSM",show=False
         ).add_to(m)
     folium.TileLayer(
-          "http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}",
-           attr="GoogleMaps",
-            max_zoom= 20,
-            subdomains= ["mt0", "mt1", "mt2", "mt3"],
-          name="googleStreetMap",show=False
-        ).add_to(m)
-    folium.TileLayer(
-          "http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}",
-           attr="GoogleMapsSat",
-            max_zoom= 20,
-            subdomains= ["mt0", "mt1", "mt2", "mt3"],
-          name="googleSatelliteMap",show=False
-        ).add_to(m)
-    folium.TileLayer(
-          "http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}",
-           attr="GoogleMapsHybrid",
-            max_zoom= 20,
-            subdomains= ["mt0", "mt1", "mt2", "mt3"],
-          name="googleHybridMap",show=False
-        ).add_to(m)
-    folium.TileLayer(
-         "http://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}",
-           attr="GoogleMapsTerrain",
-            max_zoom= 20,
-            subdomains= ["mt0", "mt1", "mt2", "mt3"],
-          name="googleTerrainMap",show=False
-        ).add_to(m)
-    folium.TileLayer(
           "https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryOnly/MapServer/tile/{z}/{y}/{x}",max_zoom=20,
             attr=
               'Tiles courtesy of the <a href="https://usgs.gov/">U.S. Geological Survey</a>',
