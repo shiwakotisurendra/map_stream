@@ -10,7 +10,6 @@ import geocoder
 from shapely.geometry import LineString, Polygon, Point,shape,box
 import geopandas as gpd
 import requests
-import geemap.eefolium as geemap
 from branca.element import Figure
 
 # Streamlit configuration
