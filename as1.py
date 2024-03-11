@@ -10,6 +10,7 @@ import geocoder
 from shapely.geometry import LineString, Polygon, Point,shape,box
 import geopandas as gpd
 import requests
+import geemap.eefolium as geemap
 from branca.element import Figure
 
 # Streamlit configuration
@@ -87,7 +88,7 @@ st.title("Full-Page Dashboard with Folium Map and Plots")
 st.subheader("Interactive map and plot options")
 
 def display_map(df):
-    m = folium.Map(location=[df["Latitude"].mean(), df["Longitude"].mean()], zoom_start=4)
+    m = folium.Map(location=[df["Latitude"].mean(), df["Longitude"].mean()], zoom_start=4) 
     return m
 
 # Wide layout with two columns
@@ -138,7 +139,28 @@ with col1:
         "OpenStreetMap": folium.TileLayer("OpenStreetMap"),
         "OSM TopoMap": folium.TileLayer("https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",name='OpenStreetMap',
                      attr='Map data © OpenStreetMap contributors'),
+        "OSM_HOT_Map": folium.TileLayer(
+          "https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png",
+            max_zoom= 19,
+            attr='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles style by <a href="https://www.hotosm.org/" target="_blank">Humanitarian OpenStreetMap Team</a> hosted by <a href="https://openstreetmap.fr/" target="_blank">OpenStreetMap France</a>',
+          
+        ),
+        "OpenTopoMap": folium.TileLayer(
+          "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
+            max_zoom= 17,
+            attr=
+              'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
+          ),
+        "PublicTransport": folium.TileLayer(
+          "https://tileserver.memomaps.de/tilegen/{z}/{x}/{y}.png",
+            max_zoom= 18,
+            attr=
+              'Map <a href="https://memomaps.de/">memomaps.de</a> <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+          
+        ),
         "CartoDB Dark_Matter": folium.TileLayer("CartoDB dark_matter"),
+        "CartoDB Positron": folium.TileLayer("CartoDB Positron"),
+        "CartoDB Voyager": folium.TileLayer("CartoDB Voyager"),
         "ESRI NatGeoWorldMap": folium.TileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}",
                                                 attr="ESRI NatGeoMap",name="ESRI NatGeoMap"),
         "ESRI Imagery": folium.TileLayer(
@@ -152,17 +174,100 @@ with col1:
               '<a href="https://github.com/cyclosm/cyclosm-cartocss-style/releases" title="CyclOSM - Open Bicycle render">CyclOSM</a> | Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
             name="Cyle OSM",
         ),
+         
     }
 
-    basemap_selection = st.selectbox("Select Basemap", list(basemap_options.keys()))
+    #basemap_selection = st.selectbox("Select Basemap", list(basemap_options.keys()))
 
     # Create the map with selected basemap
     m = display_map(df)
-    Figure(width="100%",height="70%").add_child(m)
+    folium.plugins.Geocoder().add_to(m)
+    #Figure(width="100%",height="70%").add_child(m)
+    
+    # folium.TileLayer(show=False).add_to(m)
+
+    folium.TileLayer("CartoDB Voyager",show=False).add_to(m)
+
+    fg= folium.FeatureGroup(name="openseamap",overlay=True,control=True).add_to(m)
+    
+    folium.TileLayer("CartoDB dark_matter",show=False).add_to(m)
+    folium.TileLayer(
+          "https://tileserver.memomaps.de/tilegen/{z}/{x}/{y}.png",
+            max_zoom= 18,
+            attr=
+              'Map <a href="https://memomaps.de/">memomaps.de</a> <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+          name="PublicTransport", show=False
+        ).add_to(m)
+    folium.TileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Terrain_Base/MapServer/tile/{z}/{y}/{x}',
+          attr= 'Tiles &copy; Esri &mdash; Source: USGS, Esri, TANA, DeLorme, and NPS',name="EsriWorldTerrain",
+          max_zoom= 13,show=False
+        ).add_to(m)
+    folium.TileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}",
+                                                attr="ESRI NatGeoMap",name="ESRI NatGeoMap",show=False).add_to(m)
+    folium.TileLayer("https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",name='OSMTopoMap',
+                     attr='Map data © OpenStreetMap contributors',show=False).add_to(m)
+    folium.TileLayer(
+            "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+            attr="ESRI Imagery",
+            name="ESRI Imagery",show=False
+        ).add_to(m)
+    folium.TileLayer(
+          "https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png", 
+            attr=
+              '<a href="https://github.com/cyclosm/cyclosm-cartocss-style/releases" title="CyclOSM - Open Bicycle render">CyclOSM</a> | Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            name="Cyle OSM",show=False
+        ).add_to(m)
+    folium.TileLayer(
+          "http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}",
+           attr="GoogleMaps",
+            max_zoom= 20,
+            subdomains= ["mt0", "mt1", "mt2", "mt3"],
+          name="googleStreetMap",show=False
+        ).add_to(m)
+    folium.TileLayer(
+          "http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}",
+           attr="GoogleMapsSat",
+            max_zoom= 20,
+            subdomains= ["mt0", "mt1", "mt2", "mt3"],
+          name="googleSatelliteMap",show=False
+        ).add_to(m)
+    folium.TileLayer(
+          "http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}",
+           attr="GoogleMapsHybrid",
+            max_zoom= 20,
+            subdomains= ["mt0", "mt1", "mt2", "mt3"],
+          name="googleHybridMap",show=False
+        ).add_to(m)
+    folium.TileLayer(
+         "http://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}",
+           attr="GoogleMapsTerrain",
+            max_zoom= 20,
+            subdomains= ["mt0", "mt1", "mt2", "mt3"],
+          name="googleTerrainMap",show=False
+        ).add_to(m)
+    folium.TileLayer(
+          "https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryOnly/MapServer/tile/{z}/{y}/{x}",max_zoom=20,
+            attr=
+              'Tiles courtesy of the <a href="https://usgs.gov/">U.S. Geological Survey</a>',
+            name="USGS_Imagery",show=False
+        ).add_to(m)
+    
+    
+    
+    folium.TileLayer('https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}',
+	max_zoom= 20,
+	attr= 'Tiles courtesy of the <a href="https://usgs.gov/">U.S. Geological Survey</a>',name='USGS_TopoMap',show=False).add_to(m)
+    # folium.TileLayer("NASAGIBS Blue Marble").add_to(m)
+    # folium.TileLayer("OpenStreetMap",show=True).add_to(m)
+    folium.TileLayer('http://tiles.openseamap.org/seamark/{z}/{x}/{y}.png',
+                     name='OpenSeaMap',
+                     attr='Map data © OpenSeaMap contributors').add_to(fg)
+    folium.LayerControl().add_to(m)
+
     folium.LatLngPopup().add_to(m)
     folium.plugins.MousePosition().add_to(m)
     folium.plugins.Fullscreen().add_to(m)
-    folium.plugins.Geocoder().add_to(m)
+    
     folium.plugins.LocateControl(auto_start=False).add_to(m)
     folium.plugins.MeasureControl(position='topright', primary_length_unit='meters', secondary_length_unit='miles', primary_area_unit='sqmeters', secondary_area_unit='acres').add_to(m)
     folium.plugins.MiniMap().add_to(m)
@@ -172,7 +277,7 @@ with col1:
     # Enable drawing control
     draw_plugin = folium.plugins.Draw(export=True,edit_options={"edit": True})
     draw_plugin.add_to(m)
-    basemap_options[basemap_selection].add_to(m)
+    #basemap_options[basemap_selection].add_to(m)
 
     # Add the draw control to the map
     m.add_child(draw_plugin)
@@ -218,18 +323,18 @@ with col1:
                 popup=row["City"],
             ).add_to(m)
 
-    # st.subheader("Folium Heatmap")
+    # # st.subheader("Folium Heatmap")
     show_heatmap = st.checkbox("Show Heatmap")
     if show_heatmap:
         folium.plugins.HeatMap(
             data=df[["Latitude", "Longitude", "Population"]], radius=15
-        ).add_to(m)
+        ).add_to(fg)
     # st.subheader("OpenSeaMap")
-    show_openseamap = st.checkbox("Show Openseamap")
-    if show_openseamap:
-        folium.TileLayer('http://tiles.openseamap.org/seamark/{z}/{x}/{y}.png',
-                     name='OpenSeaMap',
-                     attr='Map data © OpenSeaMap contributors').add_to(m)
+    # show_openseamap = st.checkbox("Show Openseamap")
+    # if show_openseamap:
+    #     folium.TileLayer('http://tiles.openseamap.org/seamark/{z}/{x}/{y}.png',
+    #                  name='OpenSeaMap',
+    #                  attr='Map data © OpenSeaMap contributors').add_to(m)
     # Shapefile/GeoJSON Upload
     """"""
     # st.subheader("Upload Shapefile or GeoJSON")
@@ -409,7 +514,7 @@ with col1:
         handle_upload(uploaded_file)
 
     # st_folium(m, width=900, height=600)
-    output= folium_static(m)
+    output= folium_static(m,width=1000,height=700)
 
 
 
