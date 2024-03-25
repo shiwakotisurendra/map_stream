@@ -199,6 +199,9 @@ with col1:
 
     # Create the map with selected basemap
     m = display_map(df)
+    if m is None:
+        m= folium.Map(location=[50.9375, 6.9603], zoom_start=4) 
+    folium.plugins.Geocoder().add_to(m)
     folium.plugins.Geocoder().add_to(m)
     # Figure(width="100%",height="70%").add_child(m)
 
