@@ -240,7 +240,7 @@ with col1:
         m= handle_geojson_data(gdf1)
 
     if bt2:
-        m= handle_geojson_data(gdf1)
+        m= handle_geojson_data(gdf2)
             
             
     folium.plugins.Geocoder().add_to(m)
