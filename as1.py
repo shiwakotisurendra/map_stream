@@ -88,26 +88,27 @@ st.subheader("Interactive map and plot options")
 
 def display_map(df):
 
-    # df_cleaned = df.dropna(subset=["Latitude", "Longitude"])
+    df_cleaned = df.dropna(subset=["Latitude", "Longitude"])
 
-    # if not df_cleaned.empty:
-    #     # Calculate the mean of Latitude and Longitude from cleaned DataFrame
-    #     center_lat = df_cleaned["Latitude"].mean()
-    #     center_lon = df_cleaned["Longitude"].mean()
+    if not df_cleaned.empty:
+        # Calculate the mean of Latitude and Longitude from cleaned DataFrame
+        center_lat = df_cleaned["Latitude"].mean()
+        center_lon = df_cleaned["Longitude"].mean()
 
-    #     # Create Folium map with the calculated center
-    #     m = folium.Map(location=[center_lat, center_lon], zoom_start=4)
+        # Create Folium map with the calculated center
+        m = folium.Map(location=[center_lat, center_lon], zoom_start=4)
 
-    #     return m
+        # Add markers for cities
+        for index, row in df_cleaned.iterrows():
+            folium.Marker([row["Latitude"], row["Longitude"]],
+                          tooltip=row["City"],
+                          popup=row["City"]).add_to(m)
 
-    # else:
-    #     # If the DataFrame is empty after dropping NaN values, return None
-    #     st.error("DataFrame does not contain valid latitude and longitude values.")
-
-    #     return None
-    df_cleaned = df.dropna(subset=['Latitude', 'Longitude'])
-    m = folium.Map(location=[df_cleaned["Latitude"].mean(), df_cleaned["Longitude"].mean()], zoom_start=4) 
-    return m
+        return m
+    else:
+        # If the DataFrame is empty after dropping NaN values, return None
+        m= folium.Map(location=[50.9375, 6.9603], zoom_start=4) 
+        return m
 
 
 # Wide layout with two columns
@@ -200,8 +201,6 @@ with col1:
 
     # Create the map with selected basemap
     m = display_map(df)
-    if m is None:
-        m= folium.Map(location=[50.9375, 6.9603], zoom_start=4) 
     folium.plugins.Geocoder().add_to(m)
     folium.plugins.Geocoder().add_to(m)
     # Figure(width="100%",height="70%").add_child(m)
