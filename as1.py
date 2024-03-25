@@ -197,7 +197,13 @@ with col1:
 
     # Create the map with selected basemap
     m = display_map(df)
-    folium.plugins.Geocoder().add_to(m)
+    if m is not None:  # Check if the map is not None
+        folium.plugins.Geocoder().add_to(m)
+        # Add other plugins or operations as needed
+        # folium_static(m, width=1000, height=700)
+    else:
+        st.error("No valid map data available.")
+    # folium.plugins.Geocoder().add_to(m)
     # Figure(width="100%",height="70%").add_child(m)
 
     # folium.TileLayer(show=False).add_to(m)
