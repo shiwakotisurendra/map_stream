@@ -105,7 +105,8 @@ def display_map(df):
     #     st.error("DataFrame does not contain valid latitude and longitude values.")
 
     #     return None
-    m = folium.Map(location=[df["Latitude"].mean(), df["Longitude"].mean()], zoom_start=4) 
+    df_cleaned = df.dropna(subset=['Latitude', 'Longitude'])
+    m = folium.Map(location=[df_cleaned["Latitude"].mean(), df_cleaned["Longitude"].mean()], zoom_start=4) 
     return m
 
 
