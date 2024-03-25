@@ -234,8 +234,8 @@ with col1:
         
         return m
 
-    bt1 = st.button("Level2")
-    bt2 = st.button("Level3")
+    bt1 = st.button("DEU_Level2")
+    bt2 = st.button("DEU_Level3")
     if bt1:
         m= handle_geojson_data(gdf1)
 
