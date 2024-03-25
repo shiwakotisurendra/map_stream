@@ -87,8 +87,22 @@ st.title("Full-Page Dashboard with Folium Map and Plots")
 st.subheader("Interactive map and plot options")
 
 def display_map(df):
-    m = folium.Map(location=[df["Latitude"].mean(), df["Longitude"].mean()], zoom_start=4) 
-    return m
+	
+	df_cleaned = df.dropna(subset=['Latitude', 'Longitude'])
+
+	if not df_cleaned.empty:
+	        # Calculate the mean of Latitude and Longitude from cleaned DataFrame
+		center_lat = df_cleaned["Latitude"].mean()
+	        center_lon = df_cleaned["Longitude"].mean()
+	
+	        # Create Folium map with the calculated center
+	        m = folium.Map(location=[center_lat, center_lon], zoom_start=4)
+
+        	return m
+	else:
+	        # If the DataFrame is empty after dropping NaN values, return None
+	        st.error("DataFrame does not contain valid latitude and longitude values.")
+	        return None
 
 # Wide layout with two columns
 col1, col2 = st.columns([2, 0.8])
