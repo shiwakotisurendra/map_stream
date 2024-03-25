@@ -7,13 +7,14 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import geocoder
-from shapely.geometry import LineString, Polygon, Point,shape,box
+from shapely.geometry import LineString, Polygon, Point, shape, box
 import geopandas as gpd
 import requests
 from branca.element import Figure
 
 # Streamlit configuration
 st.set_page_config(page_title="Dashboard with Folium Map and Plots", layout="wide")
+
 
 @st.cache_data
 def europe_capital():
@@ -55,55 +56,56 @@ def europe_capital():
     df = pd.DataFrame(data).dropna()
     return df
 
+
 def get_admin_boundaries(place):
-    url = 'https://nominatim.openstreetmap.org/search'
-    params = {
-        'q': place,
-        'format': 'json',
-        'polygon_geojson': 1,
-        'limit': 1
-    }
+    url = "https://nominatim.openstreetmap.org/search"
+    params = {"q": place, "format": "json", "polygon_geojson": 1, "limit": 1}
 
     response = requests.get(url, params=params)
     data = response.json()
 
     if len(data) > 0:
-        return data[0]['geojson']
+        return data[0]["geojson"]
     else:
         return None
-    
-
 
 
 df = europe_capital()
 
+
 def get_gdf_from_name(name):
-    get_gdf = gpd.GeoDataFrame(geometry=[shape(get_admin_boundaries(name))],crs="epsg:4326")
+    get_gdf = gpd.GeoDataFrame(
+        geometry=[shape(get_admin_boundaries(name))], crs="epsg:4326"
+    )
 
     return get_gdf
+
 
 # Title and subtitle
 st.title("Full-Page Dashboard with Folium Map and Plots")
 st.subheader("Interactive map and plot options")
 
+
 def display_map(df):
-	
-    df_cleaned = df.dropna(subset=['Latitude', 'Longitude'])
+
+    df_cleaned = df.dropna(subset=["Latitude", "Longitude"])
 
     if not df_cleaned.empty:
-	        # Calculate the mean of Latitude and Longitude from cleaned DataFrame
+        # Calculate the mean of Latitude and Longitude from cleaned DataFrame
         center_lat = df_cleaned["Latitude"].mean()
         center_lon = df_cleaned["Longitude"].mean()
-	
-	        # Create Folium map with the calculated center
+
+        # Create Folium map with the calculated center
         m = folium.Map(location=[center_lat, center_lon], zoom_start=4)
 
         return m
 
     else:
-	        # If the DataFrame is empty after dropping NaN values, return None
+        # If the DataFrame is empty after dropping NaN values, return None
         st.error("DataFrame does not contain valid latitude and longitude values.")
-	return None
+
+        return None
+
 
 # Wide layout with two columns
 col1, col2 = st.columns([2, 0.8])
@@ -151,123 +153,146 @@ with col1:
 
     basemap_options = {
         "OpenStreetMap": folium.TileLayer("OpenStreetMap"),
-        "OSM TopoMap": folium.TileLayer("https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",name='OpenStreetMap',
-                     attr='Map data © OpenStreetMap contributors'),
+        "OSM TopoMap": folium.TileLayer(
+            "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
+            name="OpenStreetMap",
+            attr="Map data © OpenStreetMap contributors",
+        ),
         "OSM_HOT_Map": folium.TileLayer(
-          "https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png",
-            max_zoom= 19,
+            "https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png",
+            max_zoom=19,
             attr='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles style by <a href="https://www.hotosm.org/" target="_blank">Humanitarian OpenStreetMap Team</a> hosted by <a href="https://openstreetmap.fr/" target="_blank">OpenStreetMap France</a>',
-          
         ),
         "OpenTopoMap": folium.TileLayer(
-          "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
-            max_zoom= 17,
-            attr=
-              'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
-          ),
+            "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
+            max_zoom=17,
+            attr='Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
+        ),
         "PublicTransport": folium.TileLayer(
-          "https://tileserver.memomaps.de/tilegen/{z}/{x}/{y}.png",
-            max_zoom= 18,
-            attr=
-              'Map <a href="https://memomaps.de/">memomaps.de</a> <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-          
+            "https://tileserver.memomaps.de/tilegen/{z}/{x}/{y}.png",
+            max_zoom=18,
+            attr='Map <a href="https://memomaps.de/">memomaps.de</a> <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
         ),
         "CartoDB Dark_Matter": folium.TileLayer("CartoDB dark_matter"),
         "CartoDB Positron": folium.TileLayer("CartoDB Positron"),
         "CartoDB Voyager": folium.TileLayer("CartoDB Voyager"),
-        "ESRI NatGeoWorldMap": folium.TileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}",
-                                                attr="ESRI NatGeoMap",name="ESRI NatGeoMap"),
+        "ESRI NatGeoWorldMap": folium.TileLayer(
+            "https://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}",
+            attr="ESRI NatGeoMap",
+            name="ESRI NatGeoMap",
+        ),
         "ESRI Imagery": folium.TileLayer(
             "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
             attr="ESRI Imagery",
             name="ESRI Imagery",
         ),
-         "CyclOSM": folium.TileLayer(
-          "https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png", 
-            attr=
-              '<a href="https://github.com/cyclosm/cyclosm-cartocss-style/releases" title="CyclOSM - Open Bicycle render">CyclOSM</a> | Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        "CyclOSM": folium.TileLayer(
+            "https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png",
+            attr='<a href="https://github.com/cyclosm/cyclosm-cartocss-style/releases" title="CyclOSM - Open Bicycle render">CyclOSM</a> | Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
             name="Cyle OSM",
         ),
-         
     }
 
-    #basemap_selection = st.selectbox("Select Basemap", list(basemap_options.keys()))
+    # basemap_selection = st.selectbox("Select Basemap", list(basemap_options.keys()))
 
     # Create the map with selected basemap
     m = display_map(df)
     folium.plugins.Geocoder().add_to(m)
-    #Figure(width="100%",height="70%").add_child(m)
-    
+    # Figure(width="100%",height="70%").add_child(m)
+
     # folium.TileLayer(show=False).add_to(m)
 
-    folium.TileLayer("CartoDB Voyager",show=False).add_to(m)
+    folium.TileLayer("CartoDB Voyager", show=False).add_to(m)
 
-    fg= folium.FeatureGroup(name="openseamap",overlay=True,control=True).add_to(m)
-    
-    folium.TileLayer("CartoDB dark_matter",show=False).add_to(m)
+    fg = folium.FeatureGroup(name="openseamap", overlay=True, control=True).add_to(m)
+
+    folium.TileLayer("CartoDB dark_matter", show=False).add_to(m)
     folium.TileLayer(
-          "https://tileserver.memomaps.de/tilegen/{z}/{x}/{y}.png",
-            max_zoom= 18,
-            attr=
-              'Map <a href="https://memomaps.de/">memomaps.de</a> <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-          name="PublicTransport", show=False
-        ).add_to(m)
-    folium.TileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Terrain_Base/MapServer/tile/{z}/{y}/{x}',
-          attr= 'Tiles &copy; Esri &mdash; Source: USGS, Esri, TANA, DeLorme, and NPS',name="EsriWorldTerrain",
-          max_zoom= 13,show=False
-        ).add_to(m)
-    folium.TileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}",
-                                                attr="ESRI NatGeoMap",name="ESRI NatGeoMap",show=False).add_to(m)
-    folium.TileLayer("https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",name='OSMTopoMap',
-                     attr='Map data © OpenStreetMap contributors',show=False).add_to(m)
+        "https://tileserver.memomaps.de/tilegen/{z}/{x}/{y}.png",
+        max_zoom=18,
+        attr='Map <a href="https://memomaps.de/">memomaps.de</a> <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        name="PublicTransport",
+        show=False,
+    ).add_to(m)
     folium.TileLayer(
-            "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-            attr="ESRI Imagery",
-            name="ESRI Imagery",show=False
-        ).add_to(m)
+        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Terrain_Base/MapServer/tile/{z}/{y}/{x}",
+        attr="Tiles &copy; Esri &mdash; Source: USGS, Esri, TANA, DeLorme, and NPS",
+        name="EsriWorldTerrain",
+        max_zoom=13,
+        show=False,
+    ).add_to(m)
     folium.TileLayer(
-          "https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png", 
-            attr=
-              '<a href="https://github.com/cyclosm/cyclosm-cartocss-style/releases" title="CyclOSM - Open Bicycle render">CyclOSM</a> | Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-            name="Cyle OSM",show=False
-        ).add_to(m)
+        "https://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}",
+        attr="ESRI NatGeoMap",
+        name="ESRI NatGeoMap",
+        show=False,
+    ).add_to(m)
     folium.TileLayer(
-          "https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryOnly/MapServer/tile/{z}/{y}/{x}",max_zoom=20,
-            attr=
-              'Tiles courtesy of the <a href="https://usgs.gov/">U.S. Geological Survey</a>',
-            name="USGS_Imagery",show=False
-        ).add_to(m)
-    
-    
-    
-    folium.TileLayer('https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}',
-	max_zoom= 20,
-	attr= 'Tiles courtesy of the <a href="https://usgs.gov/">U.S. Geological Survey</a>',name='USGS_TopoMap',show=False).add_to(m)
+        "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
+        name="OSMTopoMap",
+        attr="Map data © OpenStreetMap contributors",
+        show=False,
+    ).add_to(m)
+    folium.TileLayer(
+        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+        attr="ESRI Imagery",
+        name="ESRI Imagery",
+        show=False,
+    ).add_to(m)
+    folium.TileLayer(
+        "https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png",
+        attr='<a href="https://github.com/cyclosm/cyclosm-cartocss-style/releases" title="CyclOSM - Open Bicycle render">CyclOSM</a> | Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        name="Cyle OSM",
+        show=False,
+    ).add_to(m)
+    folium.TileLayer(
+        "https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryOnly/MapServer/tile/{z}/{y}/{x}",
+        max_zoom=20,
+        attr='Tiles courtesy of the <a href="https://usgs.gov/">U.S. Geological Survey</a>',
+        name="USGS_Imagery",
+        show=False,
+    ).add_to(m)
+
+    folium.TileLayer(
+        "https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}",
+        max_zoom=20,
+        attr='Tiles courtesy of the <a href="https://usgs.gov/">U.S. Geological Survey</a>',
+        name="USGS_TopoMap",
+        show=False,
+    ).add_to(m)
     # folium.TileLayer("NASAGIBS Blue Marble").add_to(m)
     # folium.TileLayer("OpenStreetMap",show=True).add_to(m)
-    folium.TileLayer('http://tiles.openseamap.org/seamark/{z}/{x}/{y}.png',
-                     name='OpenSeaMap',
-                     attr='Map data © OpenSeaMap contributors').add_to(fg)
+    folium.TileLayer(
+        "http://tiles.openseamap.org/seamark/{z}/{x}/{y}.png",
+        name="OpenSeaMap",
+        attr="Map data © OpenSeaMap contributors",
+    ).add_to(fg)
     folium.LayerControl().add_to(m)
 
     folium.LatLngPopup().add_to(m)
     folium.plugins.MousePosition().add_to(m)
     folium.plugins.Fullscreen().add_to(m)
-    
+
     folium.plugins.LocateControl(auto_start=False).add_to(m)
-    folium.plugins.MeasureControl(position='topright', primary_length_unit='meters', secondary_length_unit='miles', primary_area_unit='sqmeters', secondary_area_unit='acres').add_to(m)
+    folium.plugins.MeasureControl(
+        position="topright",
+        primary_length_unit="meters",
+        secondary_length_unit="miles",
+        primary_area_unit="sqmeters",
+        secondary_area_unit="acres",
+    ).add_to(m)
     folium.plugins.MiniMap().add_to(m)
-    #folium.plugins.ScrollZoomToggler().add_to(m)
-    #folium.plugins.PolyLineOffset(locations=[[df["Latitude"].mean(), df["Longitude"].mean()]]).add_to(m)
+    # folium.plugins.ScrollZoomToggler().add_to(m)
+    # folium.plugins.PolyLineOffset(locations=[[df["Latitude"].mean(), df["Longitude"].mean()]]).add_to(m)
 
     # Enable drawing control
-    draw_plugin = folium.plugins.Draw(export=True,edit_options={"edit": True})
+    draw_plugin = folium.plugins.Draw(export=True, edit_options={"edit": True})
     draw_plugin.add_to(m)
-    #basemap_options[basemap_selection].add_to(m)
+    # basemap_options[basemap_selection].add_to(m)
 
     # Add the draw control to the map
     m.add_child(draw_plugin)
-    city_name = st.text_input('Enter the place name')
+    city_name = st.text_input("Enter the place name")
     if city_name:
         folium.GeoJson(get_gdf_from_name(city_name)).add_to(m)
 
@@ -370,15 +395,19 @@ with col1:
     @st.cache_data
     def get_temp_dir():
         return tempfile.TemporaryDirectory().name
+
     tempdir = get_temp_dir()
 
     def handle_upload(uploaded_file):
-    
-        if type(uploaded_file)== list and (any('.geojson' in file.name for file in uploaded_file) or any('.json' in file.name for file in uploaded_file)):# or any('.json' in file.name for file in uploaded_file)):
+
+        if type(uploaded_file) == list and (
+            any(".geojson" in file.name for file in uploaded_file)
+            or any(".json" in file.name for file in uploaded_file)
+        ):  # or any('.json' in file.name for file in uploaded_file)):
             # data = uploaded_file.read()
             for uploaded_file in uploaded_file:
                 gdf = gpd.read_file(uploaded_file)
-            
+
             # geojson_layer = folium.GeoJson(data)
             # geojson_layer.add_to(m)
             # Add the loaded shapefile/GeoJSON to the map
@@ -402,7 +431,10 @@ with col1:
                 ),
             ).add_to(jsond)
 
-        elif type(uploaded_file) != list and (uploaded_file.name.endswith('.geojson') or uploaded_file.name.endswith('.json')):
+        elif type(uploaded_file) != list and (
+            uploaded_file.name.endswith(".geojson")
+            or uploaded_file.name.endswith(".json")
+        ):
             gdf = gpd.read_file(uploaded_file)
 
             def highlight_function(feature):
@@ -425,28 +457,25 @@ with col1:
                 ),
             ).add_to(jsond)
 
-        elif any('.shp' in file.name for file in uploaded_file):
-            
+        elif any(".shp" in file.name for file in uploaded_file):
+
             with tempfile.TemporaryDirectory() as temp_dir:
 
-            # Save the uploaded shapefile to a temporary directory
+                # Save the uploaded shapefile to a temporary directory
                 for uploaded_file in uploaded_file:
-                    temp_file_path = os.path.join(
-                        temp_dir, uploaded_file.name
-                    )
+                    temp_file_path = os.path.join(temp_dir, uploaded_file.name)
                     print(temp_file_path)
                     if uploaded_file.name.endswith(".shp"):
                         shp_path = temp_file_path
                     with open(temp_file_path, "wb") as temp_file:
                         temp_file.write(uploaded_file.getbuffer())
 
-                gdf = gpd.read_file(shp_path)       
+                gdf = gpd.read_file(shp_path)
             os.environ["SHAPE_RESTORE_SHX"] = "YES"
-            
+
             print(shp_path)
-   
-    
-#############################################################################
+
+            #############################################################################
             # with tempfile.TemporaryDirectory() as temp_dir:
             #     # Save the uploaded shapefile to a temporary directory
             #     # for ext in [".shp", ".shx", ".dbf", ".prj"]:
@@ -455,9 +484,9 @@ with col1:
             #     )
             #     with open(temp_file_path, "wb") as temp_file:
             #         temp_file.write(uploaded_file.getvalue())
-                    
+
             #     os.environ["SHAPE_RESTORE_SHX"] = "YES"
-#############################################################################
+            #############################################################################
 
             print(gdf.head())
             # Assign a CRS to the GeoDataFrame if it is not already defined
@@ -492,7 +521,7 @@ with col1:
     st.sidebar.header("Upload Shapefile or GeoJSON")
     uploaded_file = st.sidebar.file_uploader(
         "Upload",
-        type=["geojson","shx","prj","dbf","shp", "json"],
+        type=["geojson", "shx", "prj", "dbf", "shp", "json"],
         accept_multiple_files=True,
         key="upload",
     )
@@ -500,12 +529,7 @@ with col1:
         handle_upload(uploaded_file)
 
     # st_folium(m, width=900, height=600)
-    output= folium_static(m,width=1000,height=700)
-
-
-
-
-
+    output = folium_static(m, width=1000, height=700)
 
     # #Save the drawn object
     # drawn_json = draw_plugin.last_draw
