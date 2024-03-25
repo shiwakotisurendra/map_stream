@@ -202,7 +202,8 @@ with col1:
     # Create the map with selected basemap
     m = display_map(df)
     
-    gdf = gpd.read_file("./Deutschland/DEU_adm2.shp")
+    gdf1 = gpd.read_file("./Deutschland/DEU_adm2.shp")
+    gdf2 = gpd.read_file("./Deutschland/DEU_adm3.shp")
     
     def handle_geojson_data(gdf):
         if gdf.crs is None:
@@ -232,8 +233,14 @@ with col1:
         ).add_to(jsond)
         
         return m
-    
-    m= handle_geojson_data(gdf)
+
+    bt1 = st.button("Level2")
+    bt2 = st.button("Level3")
+    if bt1:
+        m= handle_geojson_data(gdf1)
+
+    if bt2:
+        m= handle_geojson_data(gdf1)
             
             
     folium.plugins.Geocoder().add_to(m)
