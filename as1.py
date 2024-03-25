@@ -569,7 +569,7 @@ with col1:
         handle_upload(uploaded_file)
 
     # st_folium(m, width=900, height=600)
-    output = folium_static(m, width=1500, height=900)
+    output = folium_static(m, width=1000, height=550)
 
     # #Save the drawn object
     # drawn_json = draw_plugin.last_draw
