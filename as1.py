@@ -201,6 +201,41 @@ with col1:
 
     # Create the map with selected basemap
     m = display_map(df)
+    
+    gdf = gpd.read_file("./Deutschland/DEU_adm2.shp")
+    
+    def handle_geojson_data(gdf):
+        if gdf.crs is None:
+            gdf.crs = "EPSG:4326"
+        # Convert the shapefile to GeoJSON format
+        gdf = gdf.to_crs("EPSG:4326")
+
+        # geojson_layer = folium.GeoJson(json.loads(geojson_data))
+        def highlight_function(feature):
+            return {
+                "fillColor": "#ff0000",
+                "color": "#000000",
+                "weight": 1,
+                "fillOpacity": 0.5,
+            }
+
+        jsond = folium.GeoJson(gdf, highlight_function=highlight_function).add_to(m)
+        folium.GeoJsonPopup(
+            fields=[col for col in gdf.columns if col != "geometry"]
+        ).add_to(jsond)
+        folium.GeoJsonTooltip(
+            fields=[col for col in gdf.columns if col != "geometry"],
+            style=(
+                """background-color: grey; color: white; font-family:"
+    courier new; font-size: 24px; padding: 10px;"""
+            ),
+        ).add_to(jsond)
+        
+        return m
+    
+    m= handle_geojson_data(gdf)
+            
+            
     folium.plugins.Geocoder().add_to(m)
     # folium.plugins.Geocoder().add_to(m)
     # Figure(width="100%",height="70%").add_child(m)
