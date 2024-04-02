@@ -73,6 +73,7 @@ def get_admin_boundaries(place):
 df = europe_capital()
 
 
+# search the boundaries information
 def get_gdf_from_name(name):
     get_gdf = gpd.GeoDataFrame(
         geometry=[shape(get_admin_boundaries(name))], crs="epsg:4326"
@@ -86,6 +87,7 @@ st.title("Full-Page Dashboard with Folium Map and Plots")
 st.subheader("Interactive map and plot options")
 
 
+# display map
 def display_map(df):
 
     df_cleaned = df.dropna(subset=["Latitude", "Longitude"])
@@ -100,14 +102,16 @@ def display_map(df):
 
         # Add markers for cities
         for index, row in df_cleaned.iterrows():
-            folium.Marker([row["Latitude"], row["Longitude"]],
-                          tooltip=row["City"],
-                          popup=row["City"]).add_to(m)
+            folium.Marker(
+                [row["Latitude"], row["Longitude"]],
+                tooltip=row["City"],
+                popup=row["City"],
+            ).add_to(m)
 
         return m
     else:
         # If the DataFrame is empty after dropping NaN values, return None
-        m= folium.Map(location=[50.9375, 6.9603], zoom_start=4) 
+        m = folium.Map(location=[50.9375, 6.9603], zoom_start=4)
         return m
 
 
@@ -147,7 +151,7 @@ col1, col2 = st.columns([2, 0.2])
 #         plt.title("Population Distribution on Map")
 #         st.pyplot(fig)
 
-        # Checkbox for Folium Heatmap
+# Checkbox for Folium Heatmap
 
 
 # Column 2 - Dropdown and Options
@@ -201,10 +205,12 @@ with col1:
 
     # Create the map with selected basemap
     m = display_map(df)
-    
+
+    # Read the administrative boundaries from shapefile
     gdf1 = gpd.read_file("./Deutschland/DEU_adm2.shp")
     gdf2 = gpd.read_file("./Deutschland/DEU_adm3.shp")
-    
+
+    # add the geojson data to the folium map
     def handle_geojson_data(gdf):
         if gdf.crs is None:
             gdf.crs = "EPSG:4326"
@@ -231,29 +237,28 @@ with col1:
     courier new; font-size: 24px; padding: 10px;"""
             ),
         ).add_to(jsond)
-        
+
         return m
 
+    st.markdown("View Germany administrative Boundaries")
     bt1 = st.button("DEU_Level2")
     bt2 = st.button("DEU_Level3")
     if bt1:
-        m= handle_geojson_data(gdf1)
+        m = handle_geojson_data(gdf1)
 
     if bt2:
-        m= handle_geojson_data(gdf2)
-            
-            
+        m = handle_geojson_data(gdf2)
+
+    # Add the geocoder plugin to the folium map
     folium.plugins.Geocoder().add_to(m)
-    # folium.plugins.Geocoder().add_to(m)
-    # Figure(width="100%",height="70%").add_child(m)
 
-    # folium.TileLayer(show=False).add_to(m)
-
-    folium.TileLayer("CartoDB Voyager", show=False).add_to(m)
-
+    # add the featuregroup openseamap to the folium map
     fg = folium.FeatureGroup(name="openseamap", overlay=True, control=True).add_to(m)
 
     folium.TileLayer("CartoDB dark_matter", show=False).add_to(m)
+
+    folium.TileLayer("CartoDB Voyager", show=False).add_to(m)
+
     folium.TileLayer(
         "https://tileserver.memomaps.de/tilegen/{z}/{x}/{y}.png",
         max_zoom=18,
@@ -261,6 +266,7 @@ with col1:
         name="PublicTransport",
         show=False,
     ).add_to(m)
+
     folium.TileLayer(
         "https://server.arcgisonline.com/ArcGIS/rest/services/World_Terrain_Base/MapServer/tile/{z}/{y}/{x}",
         attr="Tiles &copy; Esri &mdash; Source: USGS, Esri, TANA, DeLorme, and NPS",
@@ -268,30 +274,35 @@ with col1:
         max_zoom=13,
         show=False,
     ).add_to(m)
+
     folium.TileLayer(
         "https://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}",
         attr="ESRI NatGeoMap",
         name="ESRI NatGeoMap",
         show=False,
     ).add_to(m)
+
     folium.TileLayer(
         "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
         name="OSMTopoMap",
         attr="Map data © OpenStreetMap contributors",
-        show=False,
+        show=True,
     ).add_to(m)
+
     folium.TileLayer(
         "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
         attr="ESRI Imagery",
         name="ESRI Imagery",
         show=False,
     ).add_to(m)
+
     folium.TileLayer(
         "https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png",
         attr='<a href="https://github.com/cyclosm/cyclosm-cartocss-style/releases" title="CyclOSM - Open Bicycle render">CyclOSM</a> | Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
         name="Cyle OSM",
         show=False,
     ).add_to(m)
+
     folium.TileLayer(
         "https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryOnly/MapServer/tile/{z}/{y}/{x}",
         max_zoom=20,
@@ -314,12 +325,14 @@ with col1:
         name="OpenSeaMap",
         attr="Map data © OpenSeaMap contributors",
     ).add_to(fg)
+
+    # Add layer control to the folium map
     folium.LayerControl().add_to(m)
 
+    # Add plugins to the folium map
     folium.LatLngPopup().add_to(m)
     folium.plugins.MousePosition().add_to(m)
     folium.plugins.Fullscreen().add_to(m)
-
     folium.plugins.LocateControl(auto_start=False).add_to(m)
     folium.plugins.MeasureControl(
         position="topright",
@@ -329,8 +342,6 @@ with col1:
         secondary_area_unit="acres",
     ).add_to(m)
     folium.plugins.MiniMap().add_to(m)
-    # folium.plugins.ScrollZoomToggler().add_to(m)
-    # folium.plugins.PolyLineOffset(locations=[[df["Latitude"].mean(), df["Longitude"].mean()]]).add_to(m)
 
     # Enable drawing control
     draw_plugin = folium.plugins.Draw(export=True, edit_options={"edit": True})
@@ -381,12 +392,14 @@ with col1:
                 popup=row["City"],
             ).add_to(m)
 
-    # # st.subheader("Folium Heatmap")
+    # st.subheader("Folium Heatmap")
+    # Add checkbox for folium heatmap
     show_heatmap = st.checkbox("Show Heatmap")
     if show_heatmap:
         folium.plugins.HeatMap(
             data=df[["Latitude", "Longitude", "Population"]], radius=15
         ).add_to(fg)
+
     # st.subheader("OpenSeaMap")
     # show_openseamap = st.checkbox("Show Openseamap")
     # if show_openseamap:
@@ -439,12 +452,14 @@ with col1:
     #         st.error(
     #             "Error loading file. Please make sure it is a valid Shapefile or GeoJSON."
     #         )
+
     @st.cache_data
     def get_temp_dir():
         return tempfile.TemporaryDirectory().name
 
     tempdir = get_temp_dir()
 
+    # handle the uploaded file in folium map
     def handle_upload(uploaded_file):
 
         if type(uploaded_file) == list and (
