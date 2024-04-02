@@ -577,29 +577,3 @@ with col1:
 
     # st_folium(m, width=900, height=600)
     output = folium_static(m, width=1200, height=600)
-
-    # #Save the drawn object
-    # drawn_json = draw_plugin.last_draw
-    # drawn_type = drawn_json['type']
-    # coordinates = drawn_json['coordinates']
-
-    # if drawn_type == 'LineString':
-    #     line = LineString(coordinates)
-    #     st.write("Line Object:", line)
-    #     # You can save the line object or perform other operations with it
-
-    # elif drawn_type == 'Polygon':
-    #     polygon = Polygon(coordinates)
-    #     st.write("Polygon Object:", polygon)
-    #     # You can save the polygon object or perform other operations with it
-
-    # elif drawn_type == 'Point':
-    #     point = Point(coordinates)
-    #     st.write("Point Object:", point)
-    #     # You can save the point object or perform other operations with it
-
-    # if st.button("Save Object"):
-    #     # Perform save operation here
-    #     st.write("Object saved successfully!")
-
-# Add any other components or sections as needed.
