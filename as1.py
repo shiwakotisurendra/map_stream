@@ -157,7 +157,7 @@ col1, col2 = st.columns([2, 0.2])
 # Column 2 - Dropdown and Options
 with col1:
     # Folium Map
-    st.subheader("Folium Map")
+    # st.subheader("Folium Map")
 
     basemap_options = {
         "OpenStreetMap": folium.TileLayer("OpenStreetMap"),
