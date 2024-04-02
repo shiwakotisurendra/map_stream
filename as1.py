@@ -279,7 +279,7 @@ with col1:
         attr="Tiles &copy; Esri &mdash; Source: USGS, Esri, TANA, DeLorme, and NPS",
         name="EsriWorldTerrain",
         max_zoom=13,
-        show=False,
+        show=True,
     ).add_to(m)
 
     folium.TileLayer(
@@ -293,7 +293,7 @@ with col1:
         "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
         name="OSMTopoMap",
         attr="Map data © OpenStreetMap contributors",
-        show=True,
+        show=False,
     ).add_to(m)
 
     folium.TileLayer(
