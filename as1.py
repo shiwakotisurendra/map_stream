@@ -116,7 +116,7 @@ def display_map(df):
 
 
 # Wide layout with two columns
-col1, col2 = st.columns([2, 0.2])
+col1, col2 = st.columns([2, 0.1])
 
 # # Column 1 - Maps and Plots
 # with col2:
@@ -241,13 +241,20 @@ with col1:
         return m
 
     st.markdown("View Boundaries data")
-    bt1 = st.button("DEU_Level2")
-    bt2 = st.button("DEU_Level3")
-    if bt1:
-        m = handle_geojson_data(gdf1)
+    
+    a1,a2,a3 = st.columns([1,1,9])
+    with a1:
+        bt1 = st.button("DEU_Level2",type="primary")
+        if bt1:
+            m = handle_geojson_data(gdf1)
+            
+    
+    with a2:
+        bt2 = st.button("DEU_Level3",type="primary")
+        if bt2:
+            m = handle_geojson_data(gdf2)
+        st.write(" ")
 
-    if bt2:
-        m = handle_geojson_data(gdf2)
 
     # Add the geocoder plugin to the folium map
     folium.plugins.Geocoder().add_to(m)
@@ -407,7 +414,7 @@ with col1:
     #                  name='OpenSeaMap',
     #                  attr='Map data © OpenSeaMap contributors').add_to(m)
     # Shapefile/GeoJSON Upload
-    """"""
+    
     # st.subheader("Upload Shapefile or GeoJSON")
     # uploaded_file = st.file_uploader(
     #     "Upload a Shapefile or GeoJSON file", type=["shp", "geojson"]
@@ -589,6 +596,6 @@ with col1:
     )
     if uploaded_file is not None:
         handle_upload(uploaded_file)
-
+    m.save("index.html")
     # st_folium(m, width=900, height=600)
     output = folium_static(m, width=1200, height=600)
