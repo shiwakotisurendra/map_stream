@@ -240,7 +240,7 @@ with col1:
 
         return m
 
-    st.markdown("View Germany administrative Boundaries")
+    st.markdown("View Boundaries data")
     bt1 = st.button("DEU_Level2")
     bt2 = st.button("DEU_Level3")
     if bt1:
